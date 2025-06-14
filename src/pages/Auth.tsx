@@ -43,7 +43,23 @@ export default function AuthPage() {
         password,
       });
       if (error) {
-        setError(error.message);
+        if (
+          error.message === "Email not confirmed" ||
+          error.message.toLowerCase().includes("confirm")
+        ) {
+          setError(
+            "You need to confirm your email before logging in. Please check your inbox (and spam folder) for a confirmation link."
+          );
+        } else if (
+          error.message === "Invalid login credentials" ||
+          error.message.toLowerCase().includes("invalid login")
+        ) {
+          setError(
+            "Incorrect email or password. If you just signed up, ensure you have clicked the confirmation link sent to your email."
+          );
+        } else {
+          setError(error.message);
+        }
       } else {
         setMessage("Login successful! Redirecting...");
       }
@@ -56,7 +72,16 @@ export default function AuthPage() {
         },
       });
       if (error) {
-        setError(error.message);
+        if (
+          error.message.toLowerCase().includes("already registered") ||
+          error.message.toLowerCase().includes("user already")
+        ) {
+          setError(
+            "This email is already registered. Please use a different email or try logging in."
+          );
+        } else {
+          setError(error.message);
+        }
       } else {
         setMessage("Check your email for a confirmation link!");
       }
