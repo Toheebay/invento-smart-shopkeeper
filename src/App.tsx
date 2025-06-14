@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,8 +9,28 @@ import BarcodePage from "./pages/Barcode";
 import LoginPage from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import { AppNav } from "@/components/AppNav";
+import AuthPage from "./pages/Auth";
 
 const queryClient = new QueryClient();
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const [hasSession, setHasSession] = React.useState<null | boolean>(null);
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setHasSession(!!data.session);
+    });
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setHasSession(!!session);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+  if (hasSession === null) return <div className="min-h-screen w-full bg-green-100 flex items-center justify-center text-2xl">Loading...</div>;
+  if (!hasSession) {
+    window.location.replace("/auth");
+    return null;
+  }
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -23,10 +42,32 @@ const App = () => (
           <AppNav />
           <div className="flex-1">
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/pos" element={<POSPage />} />
-              <Route path="/barcode" element={<BarcodePage />} />
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/pos"
+                element={
+                  <ProtectedRoute>
+                    <POSPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/barcode"
+                element={
+                  <ProtectedRoute>
+                    <BarcodePage />
+                  </ProtectedRoute>
+                }
+              />
+              {/* <Route path="/login" element={<LoginPage />} /> */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
