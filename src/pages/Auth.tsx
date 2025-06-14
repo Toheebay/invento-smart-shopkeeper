@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,27 +17,55 @@ export default function AuthPage() {
 
   // Simulate auth session check and redirect (replace with your backend logic)
   React.useEffect(() => {
-    // TODO: Replace with backend session/token check
-    const isLoggedIn = false; // <- Replace with your real check
+    // TODO: Replace with backend session/token check (call your API or check localStorage, etc.)
+    const isLoggedIn = false; // <- Replace with a real check, if you wish
     if (isLoggedIn) navigate("/");
   }, [navigate]);
 
-  // Mock API functions to replace with your backend calls
-  async function login(email: string, password: string) {
-    // TODO: Replace this with REST API call to your backend
+  // === STEP 1: REPLACE THESE FUNCTIONS WITH YOUR API CALLS! ===
+
+  // --- LOGIN ---
+  async function login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+    // TODO: Replace this mock with a REST API call
+    // Example:
+    // const res = await fetch('http://localhost:3000/api/login', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ email, password }),
+    // });
+    // const data = await res.json();
+    // return data;
     if (email === "test@example.com" && password === "password") {
       return { success: true };
     }
-    return { error: "Invalid email or password" };
+    return { success: false, error: "Invalid email or password" };
   }
 
-  async function signup(email: string, password: string) {
-    // TODO: Replace this with REST API call to your backend
+  // --- SIGN UP ---
+  async function signup(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+    // TODO: Replace this mock with a REST API call
+    // Example:
+    // const res = await fetch('http://localhost:3000/api/signup', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ email, password }),
+    // });
+    // const data = await res.json();
+    // return data;
     return { success: true };
   }
 
-  async function forgotPassword(email: string) {
-    // TODO: Replace this with REST API call to your backend
+  // --- FORGOT PASSWORD ---
+  async function forgotPassword(email: string): Promise<{ success: boolean; error?: string }> {
+    // TODO: Replace this mock with a REST API call
+    // Example:
+    // const res = await fetch('http://localhost:3000/api/forgot-password', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ email }),
+    // });
+    // const data = await res.json();
+    // return data;
     return { success: true };
   }
 
