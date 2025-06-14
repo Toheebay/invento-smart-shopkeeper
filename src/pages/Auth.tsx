@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogIn, UserPlus, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 type AuthMode = "login" | "signup" | "forgot";
 
@@ -26,47 +27,53 @@ export default function AuthPage() {
 
   // --- LOGIN ---
   async function login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
-    // TODO: Replace this mock with a REST API call
-    // Example:
-    // const res = await fetch('http://localhost:3000/api/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email, password }),
-    // });
-    // const data = await res.json();
-    // return data;
-    if (email === "test@example.com" && password === "password") {
-      return { success: true };
+    try {
+      const res = await axios.post("http://localhost:3000/api/login", {
+        email,
+        password,
+      });
+      // You may need to adjust the response structure based on your API
+      if (res.data && res.data.success) {
+        return { success: true };
+      } else {
+        return { success: false, error: res.data.error || "Login failed" };
+      }
+    } catch (err: any) {
+      return { success: false, error: err.response?.data?.error || "Network or server error" };
     }
-    return { success: false, error: "Invalid email or password" };
   }
 
   // --- SIGN UP ---
   async function signup(email: string, password: string): Promise<{ success: boolean; error?: string }> {
-    // TODO: Replace this mock with a REST API call
-    // Example:
-    // const res = await fetch('http://localhost:3000/api/signup', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email, password }),
-    // });
-    // const data = await res.json();
-    // return data;
-    return { success: true };
+    try {
+      const res = await axios.post("http://localhost:3000/api/signup", {
+        email,
+        password,
+      });
+      if (res.data && res.data.success) {
+        return { success: true };
+      } else {
+        return { success: false, error: res.data.error || "Signup failed" };
+      }
+    } catch (err: any) {
+      return { success: false, error: err.response?.data?.error || "Network or server error" };
+    }
   }
 
   // --- FORGOT PASSWORD ---
   async function forgotPassword(email: string): Promise<{ success: boolean; error?: string }> {
-    // TODO: Replace this mock with a REST API call
-    // Example:
-    // const res = await fetch('http://localhost:3000/api/forgot-password', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email }),
-    // });
-    // const data = await res.json();
-    // return data;
-    return { success: true };
+    try {
+      const res = await axios.post("http://localhost:3000/api/forgot-password", {
+        email,
+      });
+      if (res.data && res.data.success) {
+        return { success: true };
+      } else {
+        return { success: false, error: res.data.error || "Failed to send email" };
+      }
+    } catch (err: any) {
+      return { success: false, error: err.response?.data?.error || "Network or server error" };
+    }
   }
 
   const handleAuth = async (e: React.FormEvent) => {
