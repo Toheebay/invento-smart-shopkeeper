@@ -1,6 +1,5 @@
 
-import React, { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LogIn, UserPlus, Mail } from "lucide-react";
@@ -17,80 +16,59 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Session persistence && redirection
-  useEffect(() => {
-    let ignore = false;
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user && !ignore) navigate("/");
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user && !ignore) navigate("/");
-    });
-    return () => {
-      ignore = true;
-      data.subscription.unsubscribe();
-    };
+  // Simulate auth session check and redirect (replace with your backend logic)
+  React.useEffect(() => {
+    // TODO: Replace with backend session/token check
+    const isLoggedIn = false; // <- Replace with your real check
+    if (isLoggedIn) navigate("/");
   }, [navigate]);
+
+  // Mock API functions to replace with your backend calls
+  async function login(email: string, password: string) {
+    // TODO: Replace this with REST API call to your backend
+    if (email === "test@example.com" && password === "password") {
+      return { success: true };
+    }
+    return { error: "Invalid email or password" };
+  }
+
+  async function signup(email: string, password: string) {
+    // TODO: Replace this with REST API call to your backend
+    return { success: true };
+  }
+
+  async function forgotPassword(email: string) {
+    // TODO: Replace this with REST API call to your backend
+    return { success: true };
+  }
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setMessage("");
     setPending(true);
+
     if (authMode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        if (
-          error.message === "Email not confirmed" ||
-          error.message.toLowerCase().includes("confirm")
-        ) {
-          setError(
-            "You need to confirm your email before logging in. Please check your inbox (and spam folder) for a confirmation link."
-          );
-        } else if (
-          error.message === "Invalid login credentials" ||
-          error.message.toLowerCase().includes("invalid login")
-        ) {
-          setError(
-            "Incorrect email or password. If you just signed up, ensure you have clicked the confirmation link sent to your email."
-          );
-        } else {
-          setError(error.message);
-        }
+      const res = await login(email, password);
+      if (res.error) {
+        setError(res.error);
       } else {
         setMessage("Login successful! Redirecting...");
+        // TODO: set session/token from your backend here
+        setTimeout(() => navigate("/"), 1000);
       }
     } else if (authMode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-        },
-      });
-      if (error) {
-        if (
-          error.message.toLowerCase().includes("already registered") ||
-          error.message.toLowerCase().includes("user already")
-        ) {
-          setError(
-            "This email is already registered. Please use a different email or try logging in."
-          );
-        } else {
-          setError(error.message);
-        }
+      const res = await signup(email, password);
+      if (res.error) {
+        setError(res.error);
       } else {
-        setMessage("Check your email for a confirmation link!");
+        setMessage("Account created! You may now login.");
+        setAuthMode("login");
       }
     } else if (authMode === "forgot") {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`,
-      });
-      if (error) {
-        setError(error.message);
+      const res = await forgotPassword(email);
+      if (res.error) {
+        setError(res.error);
       } else {
         setMessage("Password recovery email sent!");
       }
@@ -99,7 +77,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div 
+    <div
       className="
         min-h-screen flex items-center justify-center 
         bg-gradient-to-br from-green-200 via-green-100 to-green-300
