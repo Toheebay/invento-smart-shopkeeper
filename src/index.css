@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom branded background */
+body {
+  /* Change background to use a soft branded green gradient */
+  background: linear-gradient(120deg, #e8fff2 0%, #c8ffe5 100%);
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @layer base {
