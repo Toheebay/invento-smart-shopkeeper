@@ -32,14 +32,14 @@ export default function AuthPage() {
         email,
         password,
       });
-      // You may need to adjust the response structure based on your API
       if (res.data && res.data.success) {
         return { success: true };
       } else {
-        return { success: false, error: res.data.error || "Login failed" };
+        // Always show "Invalid email or password" for login errors
+        return { success: false, error: "Invalid email or password" };
       }
     } catch (err: any) {
-      return { success: false, error: err.response?.data?.error || "Network or server error" };
+      return { success: false, error: "Invalid email or password" };
     }
   }
 
