@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { LogIn, UserPlus, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "@/components/ui/use-toast";
 
 type AuthMode = "login" | "signup" | "forgot";
 
@@ -39,7 +40,11 @@ export default function AuthPage() {
         return { success: false, error: "Invalid email or password" };
       }
     } catch (err: any) {
-      return { success: false, error: "Invalid email or password" };
+      console.error("Login error:", err);
+      if (err.response && err.response.data && err.response.data.error) {
+        return { success: false, error: err.response.data.error };
+      }
+      return { success: false, error: "Server error: please try again or contact support." };
     }
   }
 
@@ -86,8 +91,15 @@ export default function AuthPage() {
       const res = await login(email, password);
       if (res.error) {
         setError(res.error);
+        setMessage("");
       } else {
         setMessage("Login successful! Redirecting...");
+        setError("");
+        toast({
+          title: "Authentication Success",
+          description: "You have successfully logged in.",
+          variant: "default",
+        });
         // TODO: set session/token from your backend here
         setTimeout(() => navigate("/"), 1000);
       }
